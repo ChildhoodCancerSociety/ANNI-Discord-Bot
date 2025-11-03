@@ -1,6 +1,6 @@
 from discord.ext import commands, tasks
 import discord
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import asyncio
 
 '''
@@ -22,13 +22,13 @@ class Report_Reminder(commands.Cog):
 
     @tasks.loop(minutes=60)  # NOTE where to configure how often this program runs/checks if it's time for the message. Parameter means it checks every 60 mins obviously. 
     async def weekly_reminder(self):
-        now = datetime.now()
+        now = datetime.now(timezone(timedelta(hours=-8), 'PST')) # NOTE time is set based on PST timezone
         
         if now.weekday() == 0 and now.hour == 10: # NOTE this is where to update the day/time the message is sent
             channel = self.bot.get_channel(895108659552583730)
             if channel:
-                seven_thirty = now.replace(hour=19, minute=30, second=0, microsecond=0)
-                unix_timestamp = int(seven_thirty.timestamp())
+                five = now.replace(hour=17, minute=0, second=0, microsecond=0)  # NOTE reports must be submitted by 5PM PST
+                unix_timestamp = int(five.timestamp())
                 discord_timestamp = f"<t:{unix_timestamp}:t>"
                 await channel.send(f"Reminder to submit your weekly report by {discord_timestamp} today!")
 
